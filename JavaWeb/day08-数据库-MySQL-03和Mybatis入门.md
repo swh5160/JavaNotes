@@ -607,7 +607,23 @@ sql 中的组合in，可用 union all 来代替，提高查询效率
 （10）order by <排序字段> 
 （11）limit <起始偏移量,行数>
 https://blog.csdn.net/mysnsds/article/details/125313346
+第一步 执行 from 知道先从<left_table>这个表开始的
+第二步 执行 on 过滤 根据 <join_condition> 这里的条件过滤掉不符合内容的数据
+第三步 执行 join 添加外部行
+-------- inner join 找两张表共同的部分
+--------- left join 以左表为准，找出左表所有的信息，包括右表没有的
+--------- right join 以右表为准，找出左表所有的信息，包括左表没有的
+--------- #注意：mysql不支持全外连接 full JOIN 可以用union
+第四步 执行 where 条件 where后加需要满足的条件，然后就会得到满足条件的数据
+第五步 执行 group by 分组 当我们得到满足where条件后的数据时候，group by 可以对其进行分组操作
+第六步 执行 [fun(字段名)]  聚合函数结合 group by使用
+第七步 执行 having 过滤 having 和 group by 通常配合使用，可以对 满足where条件内容进行过滤
+第八步 执行 select 打印操作 当以上内容都满足之后，才会执行得到select列表
+第九步 执行 distinct 去重 得到select列表之后，如果指定有 distinct ，执行select后会执行 distinct去重操作
+第十步 执行 order by 排序 以上得到select列表 也经过去重 基本上就已经得到想要的所有内容了 然后就会执行 order by 排序asc desc
+第十一步 执行 limit 限制打印行数，我们可以用limit 来打印出我们想要显示多少行。
 
+原文链接：https://blog.csdn.net/m0_47090638/article/details/108663727
 ```
 
 ## 1.8 扩展从执行计划看IN、EXISTS 和 INNER JOIN效率
@@ -910,6 +926,18 @@ MyISAM 的索引⽅式就是⾮聚簇索引。
 InnoDB 中，对于主键索引，只需要⾛⼀遍主键索引的查询就能在叶⼦节点拿到数据。
 ⽽对于普通索引，叶⼦节点存储的是 key + 主键值，因此需要再⾛⼀次主键索引，通过主键索引找到⾏记录，这就是所谓的回表查询，先定位主键值，再定位⾏记录。
 
+#### ==面试题5：如何知道sql语句是否有索引==
+
+/**/
+
+执行计划explain：作用检测sql效率，是否有索引
+
+![image-20230325180047899](assets/image-20230325180047899.png)
+
+![image-20230325180158180](assets/image-20230325180158180.png)
+
+type ：all全表扫描
+
 ## 3.4 语法
 
 **创建索引**
@@ -976,7 +1004,17 @@ drop index idx_emp_name on tb_emp;
 >
 > - 添加唯一约束时，数据库实际上会添加唯一索引
 
+#### ==面试6：索引失效==
 
+/**/
+
+模糊查询索引失效
+
+建索引失效
+
+联合索引最左匹配
+
+![image-20230325180955105](assets/image-20230325180955105.png)
 
 
 
