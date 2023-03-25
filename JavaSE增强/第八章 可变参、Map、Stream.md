@@ -276,6 +276,8 @@ public class MapTouPiao {
 
 链表>8,数组长度>=64转为红黑树
 
+
+
 ```
 HashMap 任何位置添加和get取值都快
 底层数组+单向链表(红黑树)

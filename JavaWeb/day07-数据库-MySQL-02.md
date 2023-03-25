@@ -490,6 +490,33 @@ select sum(id) from tb_emp;
 
 ### 1.6 分组查询
 
+#### **注意**：
+
+##### 5.7以后的版本
+
+group by 后边字段必须和select字段一一对应，不能有多余的存在，如果需要多余，需要在group by  后一边加相应字段，
+
+详情：https://dev.mysql.com/doc/refman/5.7/en/miscellaneous-functions.html#function_any-value
+
+```mysql
+select c.id,max(d.price) as maxPrice,c.name,c.`status` from dish d join category c on d.category_id = c.id GROUP BY c.id --因为和c.id数据一一对应可以使用
+
+select category_id,name,max(price) FROM dish GROUP BY category_id --不正确
+
+/**
+
+MySQL有any_value(field)函数，它主要的作用就是抑制ONLY_FULL_GROUP_BY值被拒绝。
+其中field只能是一个
+这样sql语句不管是在ONLY_FULL_GROUP_BY模式关闭状态还是在开启模式都可以正常执行，不被mysql拒绝。
+any_value()会选择被分到同一组的数据里第一条数据的指定列值作为返回数据。
+
+以下链接是修改mysql解决办法
+原文链接：https://blog.csdn.net/u012660464/article/details/113977173
+*/
+select category_id,any_value(name),max(price) FROM dish GROUP BY category_id --修改之后可以运行
+select max(price),category_id FROM dish GROUP BY category_id
+```
+
 分组： 按照某一列或者某几列，把相同的数据进行合并输出。
 
 > 分组其实就是按列进行分类(指定列下相同的数据归为一类)，然后可以对分类完的数据进行合并计算。
